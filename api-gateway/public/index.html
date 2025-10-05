@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DreamCanvas - AI-Powered Dream Platform</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      color: #333;
+    }
+    
+    .app-container {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    /* Header Navigation */
+    .header {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 1rem 2rem;
+      box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+    
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .logo {
+      font-size: 2rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+    
+    .nav-link {
+      padding: 0.5rem 1rem;
+      border-radius: 25px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-weight: 500;
+      color: #667eea;
+    }
+    
+    .nav-link:hover, .nav-link.active {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      transform: translateY(-2px);
+    }
+    
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 600;
+    }
+    
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      padding: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+    }
+    
+    .page {
+      display: none;
+      animation: fadeIn 0.5s ease-in-out;
+    }
+    
+    .page.active {
+      display: block;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* Home Page */
+    .hero {
+      text-align: center;
+      padding: 4rem 0;
+      color: white;
+    }
+    
+    .hero h1 {
+      font-size: 3.5rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+    
+    .hero p {
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+      opacity: 0.9;
+    }
+    
+    .cta-button {
+      background: linear-gradient(135deg, #ff6b6b, #ffa500);
+      color: white;
+      padding: 1rem 2rem;
+      border: none;
+      border-radius: 50px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+    }
+    
+    .cta-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 25px rgba(255, 107, 107, 0.4);
+    }
+    
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-top: 4rem;
+    }
+    
+    .feature-card {
+      background: rgba(255, 255, 255, 0.95);
+      padding: 2rem;
+      border-radius: 20px;
+      text-align: center;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+    }
+    
+    .feature-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    }
+    
+    .feature-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    /* Dream Form */
+    .dream-form {
+      background: rgba(255, 255, 255, 0.95);
+      padding: 2rem;
+      border-radius: 20px;
+      max-width: 600px;
+      margin: 0 auto;
+      backdrop-filter: blur(10px);
+    }
+    
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: #333;
+    }
+    
+    .form-group input, .form-group textarea {
+      width: 100%;
+      padding: 1rem;
+      border: 2px solid #e1e5e9;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-family: inherit;
+      transition: all 0.3s ease;
+    }
+    
+    .form-group input:focus, .form-group textarea:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    
+    .form-group textarea {
+      resize: vertical;
+      min-height: 120px;
+    }
+    
+    .btn {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      padding: 1rem 2rem;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      width: 100%;
+    }
+    
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+    }
+    
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    /* Gallery */
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+    
+    .dream-card {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      backdrop-filter: blur(10px);
+    }
+    
+    .dream-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    }
+    
+    .dream-image {
+      width: 100%;
+      height: 200px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 4rem;
+      position: relative;
+    }
+    
+    .dream-content {
+      padding: 1.5rem;
+    }
+    
+    .dream-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: #333;
+    }
+    
+    .dream-description {
+      color: #666;
+      margin-bottom: 1rem;
+      line-height: 1.6;
+    }
+    
+    .dream-actions {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+    
+    .action-btn {
+      background: none;
+      border: 1px solid #667eea;
+      color: #667eea;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 0.9rem;
+    }
+    
+    .action-btn:hover {
+      background: #667eea;
+      color: white;
+    }
+    
+    .like-count {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #666;
+      font-size: 0.9rem;
+    }
+    
+    /* Loading */
+    .loading {
+      text-align: center;
+      padding: 2rem;
+      color: white;
+    }
+    
+    .spinner {
+      border: 4px solid rgba(255, 255, 255, 0.3);
+      border-top: 4px solid #667eea;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 1rem;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    /* Notifications */
+    .notification {
+      position: fixed;
+      top: 100px;
+      right: 20px;
+      background: rgba(255, 255, 255, 0.95);
+      padding: 1rem 1.5rem;
+      border-radius: 10px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      backdrop-filter: blur(10px);
+      transform: translateX(400px);
+      transition: all 0.3s ease;
+      z-index: 1001;
+      max-width: 300px;
+    }
+    
+    .notification.show {
+      transform: translateX(0);
+    }
+    
+    .notification.success {
+      border-left: 4px solid #4caf50;
+    }
+    
+    .notification.error {
+      border-left: 4px solid #f44336;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      .nav-links {
+        gap: 1rem;
+      }
+      
+      .nav-link {
+        padding: 0.3rem 0.8rem;
+        font-size: 0.9rem;
+      }
+      
+      .hero h1 {
+        font-size: 2.5rem;
+      }
+      
+      .features {
+        grid-template-columns: 1fr;
+      }
+      
+      .gallery-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="header">
+      <nav class="nav">
+        <div class="logo">✨ DreamCanvas</div>
+        <ul class="nav-links">
+          <li class="nav-link active" onclick="showPage('home')">Home</li>
+          <li class="nav-link" onclick="showPage('create')">Create Dream</li>
+          <li class="nav-link" onclick="showPage('gallery')">Gallery</li>
+          <li class="nav-link" onclick="showPage('trending')">Trending</li>
+          <li class="nav-link" onclick="showPage('profile')">Profile</li>
+        </ul>
+        <div class="user-info">
+          <div class="user-avatar">JD</div>
+        </div>
+      </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Home Page -->
+      <div id="home" class="page active">
+        <div class="hero">
+          <h1>Welcome to DreamCanvas</h1>
+          <p>Transform your dreams into stories, art, and share them with the world</p>
+          <button class="cta-button" onclick="showPage('create')">Start Creating</button>
+        </div>
+        
+        <div class="features">
+          <div class="feature-card">
+            <div class="feature-icon"><i class="fas fa-brain"></i></div>
+            <h3>Dream Capture</h3>
+            <p>Describe your dreams and let AI help you preserve and enhance them</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon"><i class="fas fa-palette"></i></div>
+            <h3>AI Art Generation</h3>
+            <p>Transform your dreams into beautiful visual representations</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon"><i class="fas fa-book"></i></div>
+            <h3>Story Weaving</h3>
+            <p>Turn dream fragments into complete, compelling narratives</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon"><i class="fas fa-users"></i></div>
+            <h3>Community</h3>
+            <p>Share your dreams and discover amazing creations from others</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Create Dream Page -->
+      <div id="create" class="page">
+        <div class="dream-form">
+          <h2 style="text-align: center; margin-bottom: 2rem; color: #333;">Share Your Dream</h2>
+          <form id="dreamForm">
+            <div class="form-group">
+              <label for="dreamTitle">Dream Title</label>
+              <input type="text" id="dreamTitle" placeholder="Give your dream a catchy title..." required>
+            </div>
+            <div class="form-group">
+              <label for="dreamDescription">Describe Your Dream</label>
+              <textarea id="dreamDescription" placeholder="Tell us about your dream in detail..." required></textarea>
+            </div>
+            <div class="form-group">
+              <label for="dreamTags">Tags (comma separated)</label>
+              <input type="text" id="dreamTags" placeholder="fantasy, adventure, flying...">
+            </div>
+            <button type="submit" class="btn" id="submitBtn">
+              <i class="fas fa-magic"></i> Create Dream
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Gallery Page -->
+      <div id="gallery" class="page">
+        <h2 style="color: white; text-align: center; margin-bottom: 2rem;">Dream Gallery</h2>
+        <div class="gallery-grid" id="galleryContainer">
+          <!-- Dreams will be loaded here -->
+        </div>
+      </div>
+
+      <!-- Trending Page -->
+      <div id="trending" class="page">
+        <h2 style="color: white; text-align: center; margin-bottom: 2rem;">Trending Dreams</h2>
+        <div class="gallery-grid" id="trendingContainer">
+          <!-- Trending dreams will be loaded here -->
+        </div>
+      </div>
+
+      <!-- Profile Page -->
+      <div id="profile" class="page">
+        <h2 style="color: white; text-align: center; margin-bottom: 2rem;">Your Dream Portfolio</h2>
+        <div class="gallery-grid" id="portfolioContainer">
+          <!-- User's dreams will be loaded here -->
+        </div>
+      </div>
+    </main>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading" style="display: none;">
+      <div class="spinner"></div>
+      <p>Processing your dream...</p>
+    </div>
+
+    <!-- Notification -->
+    <div id="notification" class="notification">
+      <p id="notificationText"></p>
+    </div>
+  </div>
+
+  <script>
+    // Application State
+    let currentUser = { id: 1, name: 'John Doe', avatar: 'JD' };
+    let dreams = [];
+    let trendingDreams = [];
+
+    // Navigation
+    function showPage(pageId) {
+      // Hide all pages
+      document.querySelectorAll('.page').forEach(page => {
+        page.classList.remove('active');
+      });
+      
+      // Remove active class from nav links
+      document.querySelectorAll('.nav-link').forEach(link => {
+        link.classList.remove('active');
+      });
+      
+      // Show selected page
+      document.getElementById(pageId).classList.add('active');
+      event.target.classList.add('active');
+      
+      // Load page-specific content
+      if (pageId === 'gallery') {
+        loadGallery();
+      } else if (pageId === 'trending') {
+        loadTrending();
+      } else if (pageId === 'profile') {
+        loadProfile();
+      }
+    }
+
+    // Notification System
+    function showNotification(message, type = 'success') {
+      const notification = document.getElementById('notification');
+      const notificationText = document.getElementById('notificationText');
+      
+      notificationText.textContent = message;
+      notification.className = `notification ${type} show`;
+      
+      setTimeout(() => {
+        notification.classList.remove('show');
+      }, 3000);
+    }
+
+    // Loading State
+    function showLoading(show = true) {
+      document.getElementById('loadingOverlay').style.display = show ? 'block' : 'none';
+    }
+
+    // Dream Form Submission - Optimized for speed
+    document.getElementById('dreamForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const title = document.getElementById('dreamTitle').value;
+      const description = document.getElementById('dreamDescription').value;
+      const tags = document.getElementById('dreamTags').value;
+      
+      const submitBtn = document.getElementById('submitBtn');
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating...';
+      
+      const startTime = Date.now();
+      
+      try {
+        // Submit dream first (this should be fast now)
+        const dreamResponse = await fetch('/api/dreams', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title, description, tags })
+        });
+        
+        if (dreamResponse.ok) {
+          const dreamResult = await dreamResponse.json();
+          console.log(`Dream created in ${dreamResult.responseTime || 'unknown'}`);
+          
+          // Create dream object immediately with placeholder content
+          const newDream = {
+            id: dreamResult.id || Date.now(),
+            title,
+            description,
+            tags: tags.split(',').map(tag => tag.trim()),
+            story: 'Generating story...',
+            imageUrl: null,
+            likes: 0,
+            userId: currentUser.id,
+            createdAt: new Date().toISOString()
+          };
+          
+          dreams.unshift(newDream);
+          
+          // Reset form and show success immediately
+          document.getElementById('dreamForm').reset();
+          const totalTime = Date.now() - startTime;
+          showNotification(`Dream created successfully in ${totalTime}ms! 🎉`);
+          
+          // Generate story and art in parallel in the background
+          Promise.all([
+            fetch('/api/stories').catch(e => ({ json: () => ({ story: 'Story generation failed' }) })),
+            fetch('/api/art').catch(e => ({ json: () => ({ image_url: null }) }))
+          ]).then(async ([storyResponse, artResponse]) => {
+            try {
+              const storyResult = await storyResponse.json();
+              const artResult = await artResponse.json();
+              
+              // Update the dream with generated content
+              const dreamIndex = dreams.findIndex(d => d.id === newDream.id);
+              if (dreamIndex !== -1) {
+                dreams[dreamIndex].story = storyResult.story || 'Story generation in progress...';
+                dreams[dreamIndex].imageUrl = artResult.image_url || null;
+                
+                console.log('✅ Story and art generated in background');
+                
+                // Refresh gallery if user is viewing it
+                if (document.querySelector('.page.active').id === 'gallery') {
+                  loadGallery();
+                }
+              }
+            } catch (bgError) {
+              console.error('Background generation error:', bgError);
+            }
+          });
+          
+          // Redirect to gallery quickly
+          setTimeout(() => {
+            showPage('gallery');
+          }, 800);
+          
+        } else {
+          const errorData = await dreamResponse.json();
+          throw new Error(errorData.message || 'Failed to create dream');
+        }
+        
+      } catch (error) {
+        console.error('Error creating dream:', error);
+        const totalTime = Date.now() - startTime;
+        showNotification(`Error creating dream after ${totalTime}ms. Please try again.`, 'error');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fas fa-magic"></i> Create Dream';
+      }
+    });
+
+    // Load Gallery
+    async function loadGallery() {
+      showLoading(true);
+      const container = document.getElementById('galleryContainer');
+      
+      try {
+        const response = await fetch('/api/gallery');
+        const galleryData = await response.json();
+        
+        // Combine API data with local dreams
+        const allDreams = [...dreams, ...galleryData.map(item => ({
+          id: item.id,
+          title: item.title || 'Untitled Dream',
+          description: 'A mysterious dream from the gallery...',
+          likes: item.likes || 0,
+          imageUrl: null,
+          tags: []
+        }))];
+        
+        container.innerHTML = allDreams.map(dream => createDreamCard(dream)).join('');
+        
+      } catch (error) {
+        console.error('Error loading gallery:', error);
+        container.innerHTML = '<p style="color: white; text-align: center;">Error loading gallery</p>';
+      } finally {
+        showLoading(false);
+      }
+    }
+
+    // Load Trending
+    async function loadTrending() {
+      showLoading(true);
+      const container = document.getElementById('trendingContainer');
+      
+      try {
+        const response = await fetch('/api/trending');
+        const trendingData = await response.json();
+        
+        container.innerHTML = trendingData.map((item, index) => createTrendingCard(item, index + 1)).join('');
+        
+      } catch (error) {
+        console.error('Error loading trending:', error);
+        container.innerHTML = '<p style="color: white; text-align: center;">Error loading trending dreams</p>';
+      } finally {
+        showLoading(false);
+      }
+    }
+
+    // Load Profile
+    async function loadProfile() {
+      showLoading(true);
+      const container = document.getElementById('portfolioContainer');
+      
+      try {
+        const response = await fetch(`/api/portfolio/${currentUser.id}`);
+        const portfolioData = await response.json();
+        
+        // Combine API data with user's local dreams
+        const userDreams = dreams.filter(dream => dream.userId === currentUser.id);
+        const allUserDreams = [...userDreams, ...portfolioData.map(item => ({
+          id: item.id,
+          title: item.title || 'My Dream',
+          description: 'One of your amazing dreams...',
+          likes: 0,
+          imageUrl: null,
+          tags: []
+        }))];
+        
+        container.innerHTML = allUserDreams.map(dream => createDreamCard(dream, true)).join('');
+        
+      } catch (error) {
+        console.error('Error loading profile:', error);
+        container.innerHTML = '<p style="color: white; text-align: center;">Error loading your dreams</p>';
+      } finally {
+        showLoading(false);
+      }
+    }
+
+    // Create Dream Card
+    function createDreamCard(dream, isOwner = false) {
+      return `
+        <div class="dream-card" onclick="openDreamModal(${dream.id})">
+          <div class="dream-image">
+            ${dream.imageUrl ? 
+              `<img src="${dream.imageUrl}" alt="${dream.title}" style="width:100%;height:100%;object-fit:cover;">` : 
+              '<i class="fas fa-cloud"></i>'
+            }
+          </div>
+          <div class="dream-content">
+            <h3 class="dream-title">${dream.title}</h3>
+            <p class="dream-description">${dream.description.substring(0, 100)}...</p>
+            <div class="dream-actions">
+              <button class="action-btn" onclick="event.stopPropagation(); likeDream(${dream.id})">
+                <i class="fas fa-heart"></i> Like
+              </button>
+              <button class="action-btn" onclick="event.stopPropagation(); remixDream(${dream.id})">
+                <i class="fas fa-magic"></i> Remix
+              </button>
+              <div class="like-count">
+                <i class="fas fa-heart"></i> ${dream.likes}
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // Create Trending Card
+    function createTrendingCard(item, rank) {
+      return `
+        <div class="dream-card">
+          <div class="dream-image">
+            <div style="position: absolute; top: 10px; left: 10px; background: rgba(255,255,255,0.9); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #667eea;">
+              #${rank}
+            </div>
+            <i class="fas fa-fire"></i>
+          </div>
+          <div class="dream-content">
+            <h3 class="dream-title">${item.title}</h3>
+            <p class="dream-description">This trending dream has captured the imagination of many dreamers.</p>
+            <div class="dream-actions">
+              <button class="action-btn" onclick="likeDream(${item.id})">
+                <i class="fas fa-heart"></i> Like
+              </button>
+              <button class="action-btn" onclick="remixDream(${item.id})">
+                <i class="fas fa-magic"></i> Remix
+              </button>
+              <div class="like-count">
+                <i class="fas fa-eye"></i> ${item.views} views
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // Like Dream
+    async function likeDream(dreamId) {
+      try {
+        const response = await fetch(`/api/vote/${dreamId}`, { method: 'POST' });
+        const result = await response.json();
+        
+        // Update local dream likes
+        const dream = dreams.find(d => d.id === dreamId);
+        if (dream) {
+          dream.likes = result.likes;
+        }
+        
+        showNotification('Dream liked! ❤️');
+        
+        // Refresh current page
+        const activePage = document.querySelector('.page.active').id;
+        if (activePage === 'gallery') loadGallery();
+        else if (activePage === 'profile') loadProfile();
+        
+      } catch (error) {
+        console.error('Error liking dream:', error);
+        showNotification('Error liking dream', 'error');
+      }
+    }
+
+    // Remix Dream
+    async function remixDream(dreamId) {
+      try {
+        const response = await fetch(`/api/remix/${dreamId}`, { method: 'POST' });
+        const result = await response.json();
+        
+        showNotification(`Dream remixed! New ID: ${result.new_id} ✨`);
+        
+      } catch (error) {
+        console.error('Error remixing dream:', error);
+        showNotification('Error remixing dream', 'error');
+      }
+    }
+
+    // Modal for dream details (placeholder)
+    function openDreamModal(dreamId) {
+      const dream = dreams.find(d => d.id === dreamId);
+      if (dream) {
+        alert(`Dream: ${dream.title}\n\n${dream.description}\n\nStory: ${dream.story}`);
+      }
+    }
+
+    // Initialize app
+    document.addEventListener('DOMContentLoaded', () => {
+      // Load initial data
+      loadGallery();
+    });
+  </script>
+</body>
+</html>

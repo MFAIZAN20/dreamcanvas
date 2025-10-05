@@ -1,0 +1,166 @@
+services:
+  # ========== DATABASES ==========
+  postgres-db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: dreamcanvas
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./postgres-setup:/docker-entrypoint-initdb.d
+    networks:
+      - dreamcanvas-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d dreamcanvas"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+
+  redis-cache:
+    image: redis:7
+    ports:
+      - "6379:6379"
+    networks:
+      - dreamcanvas-net
+
+  # ========== MICROSERVICES ==========
+  api-gateway:
+    build: ./api-gateway
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres-db
+      - redis-cache
+    networks:
+      - dreamcanvas-net
+
+
+  art-generator:
+    build: ./art-generator
+    ports:
+      - "5003:5003"
+    depends_on:
+      - postgres-db
+    networks:
+      - dreamcanvas-net
+
+
+  dream-ingestor:
+    build: ./dream-ingestor
+    ports:
+      - "5001:5001"
+    environment:
+      - DB_HOST=postgres-db
+      - DB_PORT=5432
+      - DB_NAME=dreamcanvas
+      - DB_USER=user
+      - DB_PASSWORD=pass
+    depends_on:
+      postgres-db:
+        condition: service_started
+    networks:
+      - dreamcanvas-net
+    restart: unless-stopped
+
+
+  notification-service:
+    build: ./notification-service
+    ports:
+      - "3005:3005"
+    depends_on:
+      - redis-cache
+    networks:
+      - dreamcanvas-net
+
+
+  trending-service:
+    build: ./trending-service
+    ports:
+      - "5007:5007"
+    depends_on:
+      - redis-cache
+    networks:
+      - dreamcanvas-net
+
+
+  voting-service:
+    build: ./voting-service
+    ports:
+      - "5005:5005"
+    environment:
+      - DB_HOST=postgres-db
+      - DB_PORT=5432
+      - DB_NAME=dreamcanvas
+      - DB_USER=user
+      - DB_PASSWORD=pass
+    depends_on:
+      postgres-db:
+        condition: service_started
+    networks:
+      - dreamcanvas-net
+    restart: unless-stopped
+
+
+  gallery-service:
+    build: ./gallery-service
+    ports:
+      - "5004:5004"
+    environment:
+      - DB_HOST=postgres-db
+      - DB_PORT=5432
+      - DB_NAME=dreamcanvas
+      - DB_USER=user
+      - DB_PASSWORD=pass
+    depends_on:
+      postgres-db:
+        condition: service_started
+    networks:
+      - dreamcanvas-net
+    restart: unless-stopped
+
+
+  remix-engine:
+    build: ./remix-engine
+    ports:
+      - "5006:5006"
+    networks:
+      - dreamcanvas-net
+
+
+  story-weaver:
+    build: ./story-weaver
+    ports:
+      - "5002:5002"
+    networks:
+      - dreamcanvas-net
+
+
+  user-portfolio:
+    build: ./user-portfolio
+    ports:
+      - "5008:5008"
+    environment:
+      - DB_HOST=postgres-db
+      - DB_PORT=5432
+      - DB_NAME=dreamcanvas
+      - DB_USER=user
+      - DB_PASSWORD=pass
+    depends_on:
+      postgres-db:
+        condition: service_started
+    networks:
+      - dreamcanvas-net
+    restart: unless-stopped
+
+# ========== NETWORK & VOLUMES ==========
+volumes:
+  postgres_data:
+
+networks:
+  dreamcanvas-net:
+    driver: bridge
